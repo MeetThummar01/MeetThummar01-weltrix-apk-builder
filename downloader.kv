@@ -1,0 +1,164 @@
+#:kivy 2.1.0
+
+<RoundedButton@Button>:
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: (0.2, 0.4, 0.9, 1) if self.state == 'normal' else (0.1, 0.3, 0.7, 1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [10]
+
+<RoundedTextInput@TextInput>:
+    background_color: 0.1, 0.1, 0.15, 1
+    foreground_color: 1, 1, 1, 1
+    cursor_color: 1, 1, 1, 1
+    padding: [15, 15]
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.1, 0.15, 1
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [10]
+
+<MainScreenManager>:
+    HomeScreen:
+        name: 'home'
+    ResultsScreen:
+        name: 'results'
+
+<HomeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+
+        Label:
+            text: "Weltrix Video Downloader"
+            font_size: '24sp'
+            size_hint_y: None
+            height: 50
+
+        BoxLayout: # Spacer
+            size_hint_y: 0.3
+
+        RoundedTextInput:
+            id: url_input
+            hint_text: 'Enter YouTube Video Link'
+            multiline: False
+            size_hint_y: None
+            height: 50
+        
+        RoundedButton:
+            id: fetch_button
+            text: 'Fetch'
+            size_hint_y: None
+            height: 50
+            on_press: root.fetch_info_thread()
+
+        Label:
+            id: status_label
+            text: ''
+            size_hint_y: None
+            height: 30
+
+        BoxLayout: # Spacer
+            size_hint_y: 0.7
+
+        Label:
+            text: 'weltrix.netlify.app'
+            size_hint_y: None
+            height: 30
+            color: 0.5, 0.5, 0.8, 1
+
+<ResultsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+
+        # Header
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                text: '< Back'
+                on_press: root.manager.current = 'home'
+                size_hint_x: 0.25
+                background_color: 0.2, 0.2, 0.2, 1
+            Label:
+                text: "Download Details"
+                font_size: '20sp'
+
+        # Content
+        AsyncImage:
+            id: thumbnail
+            source: ''
+            size_hint_y: 0.4
+            allow_stretch: True
+            keep_ratio: True
+        
+        Label:
+            id: video_title_label
+            text: 'Video Title'
+            bold: True
+            size_hint_y: None
+            height: 40
+            text_size: self.width, None
+        
+        Spinner:
+            id: quality_spinner
+            text: 'Select Quality'
+            values: []
+            disabled: True
+            size_hint_y: None
+            height: 44
+
+        GridLayout:
+            cols: 2
+            size_hint_y: None
+            height: 44
+            spacing: 10
+            Label:
+                text: 'Download Clip:'
+            CheckBox:
+                id: trim_checkbox
+                active: False
+                on_active: root.toggle_trim_fields(self.active)
+
+        GridLayout:
+            cols: 2
+            size_hint_y: None
+            height: 44
+            spacing: 10
+            TextInput:
+                id: start_time_input
+                hint_text: 'Start (HH:MM:SS)'
+                disabled: True
+            TextInput:
+                id: end_time_input
+                hint_text: 'End (HH:MM:SS)'
+                disabled: True
+        
+        RoundedButton:
+            id: download_button
+            text: 'Download'
+            size_hint_y: None
+            height: 50
+            disabled: True
+            on_press: root.download_thread()
+            
+        Label:
+            id: status_label
+            text: 'Status: Ready'
+            size_hint_y: None
+            height: 30
+            
+        ProgressBar:
+            id: progress_bar
+            max: 1
+            value: 0
+            size_hint_y: None
+            height: 10
