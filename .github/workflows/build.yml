@@ -1,4 +1,4 @@
-name: Build Kivy APK with Docker
+name: Build Kivy APK
 
 on:
   push:
@@ -12,13 +12,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer (Docker)
-        uses: docker://kivy/buildozer
+      - name: Build with Buildozer
+        # This uses a dedicated, stable action for building with Buildozer
+        # which is more reliable than the direct Docker command.
+        uses: ArtemSBulgakov/buildozer-action@v1
         with:
           command: buildozer -v android debug
-
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: weltrix-downloader-apk
-          path: .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists/weltrixdownloader/build/outputs/apk/debug/*.apk
+          path: bin/*.apk # The output path is the same
